@@ -1,6 +1,6 @@
 import { useEffect, useState, } from "react";
-import StarRating from "./StarRating";
-
+import StarRating from "./components/StarRating";
+import NavBar from "./components/NavBar";
 
 
 const average = (arr) =>
@@ -94,13 +94,6 @@ export default function App() {
 }
 
 
-function NavBar({ children }) {
-  return (
-    <nav className="nav-bar">
-      {children}
-    </nav>
-  )
-}
 
 function Logo() {
   return (
