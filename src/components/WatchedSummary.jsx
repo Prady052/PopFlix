@@ -2,9 +2,9 @@ import React from "react";
 
 export default function WatchedSummary({ watched }) {
   const average = (arr) => arr.reduce((acc,
-    cur, i, arr) => acc + cur / arr.length, 0); const avgImdbRating =
-      average(watched.map((movie) => movie.imdbRating)).toFixed(2); const
-        avgUserRating = average(watched.map((movie) => movie.userRating)).toFixed(2);
+    cur, i, arr) => acc + cur / arr.length, 0);
+  const avgImdbRating = average(watched.map((movie) => movie.imdbRating)).toFixed(2);
+  const avgUserRating = average(watched.map((movie) => movie.userRating)).toFixed(2);
   const avgRuntime = average(watched.map((movie) => movie.runtime)).toFixed(2);
   return (
     <div className="summary">
@@ -12,7 +12,7 @@ export default function WatchedSummary({ watched }) {
       <div>
         <p>
           <span>#️⃣</span>
-          <span>{watched.length} movies</span>
+          <span>{watched?.length} movies</span>
         </p>
         <p>
           <span>⭐️</span>

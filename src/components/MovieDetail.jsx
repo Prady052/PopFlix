@@ -2,6 +2,7 @@ import React from "react";
 import { useState, useEffect } from "react";
 import StarRating from "./StarRating";
 import { Loader, ErrorMessage } from "./LoadingAndError";
+import { useKey } from "./CustomHooks/useKey";
 
 
 export default function MovieDetail({ selectedId, onCloseMovie, handleAddMovie, watched }) {
@@ -48,7 +49,6 @@ export default function MovieDetail({ selectedId, onCloseMovie, handleAddMovie, 
         onCloseMovie();
     }
 
-
     useEffect(() => {
         async function loadMovie() {
             try {
@@ -66,6 +66,33 @@ export default function MovieDetail({ selectedId, onCloseMovie, handleAddMovie, 
         loadMovie();
     }, [selectedId, watched, API_URL])
 
+    useEffect(() => {
+        if (!title) return;
+        document.title = `MOVIE | ${title}`;
+
+        return function () {
+            document.title = 'PopFlix';
+        }
+    }, [title])
+
+    useKey('Escape', onCloseMovie);
+
+    // useEffect(() => {
+    //     function callback(e) {
+    //         if (e.code === 'Escape') {
+    //             onCloseMovie();
+    //             console.log("closed");
+    //         }
+    //     }
+    //     document.addEventListener("keydown", callback);
+
+    //     // if we dont do this each time a component is mount a new eventlistner 
+    //     // is add to DOM which causes multiple callbacks
+    //     //so to avoid that we return a clean up function
+    //     return function () {
+    //         document.removeEventListener("keydown", callback)
+    //     }
+    // }, [onCloseMovie])
     return (
         <>
             <div className="details">

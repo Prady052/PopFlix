@@ -1,4 +1,4 @@
-import { useEffect, useState, } from "react";
+import { useState, } from "react";
 import NavBar from "./components/NavBar";
 import Logo from "./components/Logo";
 import Search from "./components/Search";
@@ -10,18 +10,22 @@ import NumberOfResults from "./components/NumberOfResults";
 import WatchedMoveList from "./components/WatchedMovieList";
 import WatchedSummary from "./components/WatchedSummary";
 import Box from "./components/Box";
+import { useFetchMovies } from "./components/CustomHooks/useFetchMovies";
+import { useLocalStorageState } from "./components/CustomHooks/useLocalStorageState";
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
-const API_KEY = import.meta.env.VITE_API_KEY;
-const API_URL = `${API_BASE_URL}?apikey=${API_KEY}`;
 
 export default function App() {
-  const [movies, setMovies] = useState([]);
-  const [watched, setWatched] = useState([]);
-  const [Loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
   const [query, setQuery] = useState('Interstellar')
   const [selectedId, setSelectedId] = useState(null);
+
+  // BIND THE RELATED USE STATE AND USE EFFECT 
+  // TOGETHER AND CREATE A CUSTOM HOOK
+
+
+  // const [watched, setWatched] = useState(function () {
+  //   const storedWatchedMovies = localStorage.getItem('Watched');
+  //   return storedWatchedMovies ? JSON.parse(storedWatchedMovies) : [];
+  // });
 
   const handleMovieSelected = (id) => {
     setSelectedId(id === selectedId ? null : id);
@@ -30,6 +34,17 @@ export default function App() {
   const onCloseMovie = () => {
     setSelectedId(null);
   }
+
+  const [watched, setWatched] = useLocalStorageState([], 'Watched');
+
+  /* this is wrong */
+  // const closeMovie = useRef(() => {   
+  //   const onCloseMovie = (setSelectedId) => {
+  //     setSelectedId(null);
+  //   }
+  //   onCloseMovie();
+  // })
+
 
   const handleAddMovie = (movie) => {
     const isAdded = watched.find((e) => e.imdbID === movie.imdbID);
@@ -42,33 +57,12 @@ export default function App() {
     setWatched(watched.filter((e) => e.imdbID !== id));
   }
 
-  useEffect(() => {
-    async function fetchMovies() {
-      try {
-        setLoading(true);
-        setError("");
-        const res = await fetch(API_URL + `&s=${query}`);
+  // useEffect(() => {
+  // here we don't need call back because here the state is not being updated
+  //   localStorage.setItem('Watched', JSON.stringify(watched));
+  // }, [watched])
 
-        if (!res.ok) {
-          throw new Error("Something went wrong while fetching");
-        }
-        const data = await res.json();
-        if (data.Response === "False") throw new Error("Movie not found");
-
-        setMovies(data.Search);
-        setLoading(false);
-        setSelectedId(null);
-      } catch (err) {
-        console.error(err);
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    }
-    fetchMovies();
-  }, [query])
-
-
+  const { movies, loading, error } = useFetchMovies(query, setSelectedId, onCloseMovie);
 
   return (
     <>
@@ -79,8 +73,8 @@ export default function App() {
       </NavBar >
       <Main >
         <Box>
-          {Loading && <Loader />}
-          {!Loading && !error && (<MovieList movies={movies} handleMovieSelected={handleMovieSelected} />)}
+          {loading && <Loader />}
+          {!loading && !error && (<MovieList movies={movies} handleMovieSelected={handleMovieSelected} />)}
           {error && <ErrorMessage message={error} />}
 
         </Box>
